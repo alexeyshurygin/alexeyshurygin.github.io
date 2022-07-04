@@ -1,0 +1,27 @@
+---
+layout: post
+title: Make Java 6, Mac OS X and Weblogic work together
+date: 2010-08-16 21:36:34.000000000 +04:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- programming
+tags:
+- Java
+- Mac OS
+- Weblogic
+meta:
+  _edit_last: '15756633'
+  _wp_old_slug: ''
+permalink: "/2010/08/16/java-on-mac-os-x/"
+excerpt: How to update Java application to run on Java 6, Mac OS X and Weblogic 9.
+---
+<p>As many of you know, Apple <a href="http://www.javalobby.org/java/forums/t102936.html">hates Java</a>. They <a href="http://support.apple.com/kb/HT1856">delayed</a> release of Java 6 on Mac for a year and a half. When Snow Leopard hit stores last fall, another inconvenient thing happened: Java 5 was removed from the OS. And there is no official way to bring it back. The <a href="http://wiki.oneswarm.org/index.php/OS_X_10.6_Snow_Leopard">solution</a> was to get packed Java 5 directory tree from Leopard OS, unpack it and add a couple of symlinks, but it is definitely not the option for mere users. Since our application uses Java 5 (mostly because it relies on Weblogic 9), we needed to make it work on Java 6.</p>
+<p>A couple of problems have arisen. Weblogic Server 9 that we use doesn't support Java 6. We let it to run on Java 5 on the server and so only needed to make client application work with Java 6. It still pose some problems.</p>
+<p><strong>First</strong>, Weblogic custom serialization is broken. It relies on a <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4976356">bug</a> in ClassLoader, which existed in Java 5, but was fixed in Java 6. Hopefully, a workaround exists: set <strong>sun.lang.ClassLoader.allowArraySyntax</strong> property<em> </em>to true before JVM has started. Unfortunately, we can't do that: our application is run using JavaWebStart and the property is not in the list of "safe" properties which can be set in .jnlp descriptor and used by VM, setting the property programmatically after application has started has no effect. <strong>The solution</strong> was to get JDK sources, find a field this value is stored at (surprisingly, it is private field sun.misc.VM.allowArraySyntax) and set the field to <em>true</em> using reflection.</p>
+<p><strong>Second</strong>, Weblogic 9 &amp; 10 prior to version 10.3.1 doesn't support certificates signed with <strong>SHA256withRSA</strong> (<a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6832375">1</a>, <a href="http://forums.oracle.com/forums/thread.jspa?threadID=947219">2</a>). Newer versions of JDK contain such certificates starting from JDK 5u17 and 6u13. You're miserable if you have Weblogic 9, cause patch is only available per support contract which is, you know, expensive. Funny thing is, the patch <a href="http://webadm1n.blogspot.com/2010/04/oracle-jrockit-jdk-recent-cacerts.html">doesn't solve</a> the certificates problem fully. Fortunately, we already create custom keystore from system certificates, so we just need to filter those certificates with <em>SHA256withRSA</em> algorithm.</p>
+<p><strong>Third</strong>, previously we only allowed the app to run on Java 5. That was expressed as &lt;j2se version="<strong>1.5*</strong>" ...&gt; in <strong>.jnlp</strong> file. Just replace it with &lt;j2se version="<strong>1.5+</strong>" ...&gt;. This way the app can use either JDK 5 or JDK 6. More on Apple Java version strings <a href="http://developer.apple.com/mac/library/documentation/Java/Reference/Java_InfoplistRef/Articles/JavaDictionaryInfo.plistKeys.html">here</a>.</p>
+<p>Hope it'll save you a couple of days debugging.</p>

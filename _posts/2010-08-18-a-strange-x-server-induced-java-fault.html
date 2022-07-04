@@ -1,0 +1,23 @@
+---
+layout: post
+title: A strange, X server induced, Java fault
+date: 2010-08-18 22:36:48.000000000 +04:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- programming
+tags:
+- Java
+meta:
+  _edit_last: '15756633'
+  _wp_old_slug: ''
+permalink: "/2010/08/18/a-strange-x-server-induced-java-fault/"
+---
+<p>Some time ago our performance testing team run into a trouble with our Java application.</p>
+<p>They we running a performance test where multiple automatic client applications make a lot of requests to the server. It is a usual routine for high-performance applications which allows to estimate system capacity and to gather some statistics.</p>
+<p>Occasionally, automatic clients hung. Nothing was presented in system logs. No faults, no errors, nothing. Taking into account that all this was happening on a virtual machine on the other side of the globe, it was really hard to realize what's wrong. A couple of hours was spent checking and rechecking the configuration, the app installation etc.</p>
+<p>In the end, I configured a client to run in JVM debug mode and connected to it with remote debugger (a great Java feature). After digging deep into the stack it turned out that the main application thread was waiting somewhere in the AWT code. After getting AWT sources I realized that something was wrong with The <a href="http://en.wikipedia.org/wiki/X_Window_System">X Window System</a>. Despite client application doesn't show UI in automatic mode, it still calls some AWT methods. Restart of the <a href="http://en.wikipedia.org/wiki/X_server">X server</a> helped.</p>
+<p>The cause of the problem was unusual: the X server was running, which lead to no exception was thrown from inside AWT, but apparently was hung, which lead to the client was waiting infinitely for connection to the server.</p>

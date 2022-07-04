@@ -1,0 +1,22 @@
+---
+layout: post
+title: Sorting improvement in JDK 7
+date: 2010-11-13 19:58:55.000000000 +03:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Java
+- programming
+tags: []
+meta:
+  _edit_last: '15756633'
+  _wp_old_slug: ''
+permalink: "/2010/11/13/sorting-improvement-in-jdk-7/"
+---
+<p>Some time ago I <a href="/2010/09/23/cost-of-sorting-in-java/">wrote</a> on inefficient sorting in <code>java.util.Collections</code> and <code>java.util.Arrays</code>. In upcoming JDK 7 things seem to get better.</p>
+<p><a href="http://en.wikipedia.org/wiki/Joshua_Bloch">Joshua Bloch</a> <a href="http://hg.openjdk.java.net/jdk7/tl/jdk/rev/bfd7abda8f79">has changed</a> the implementation of <code>Arrays.sort(Object[])</code> method to use <a href="http://en.wikipedia.org/wiki/Timsort">TimSort</a> instead of Mergesort. This algorithm requires array allocation of size small constant to <code>n/2</code> and fewer than <code>n log(n)</code> comparisons, just <code>n</code> for almost sorted arrays. Unfortunately <code>Collections.sort(Object[])</code> still dump a collection into an array.</p>
+<p>Another improvement was made by Vladimir Yaroslavskiy et al. who <a href="http://hg.openjdk.java.net/jdk7/tl/jdk/rev/b05abb410c52">replaced</a> implementation of Quicksort in <code>Arrays.sort(array of primitives)</code> with <a href="http://permalink.gmane.org/gmane.comp.java.openjdk.core-libs.devel/2628">Dual-Pivot Quicksort</a> he invented. It offers roughly the same number of comparisons as Quicksort, but 20% fewer swaps. Tests show up to 50% or even 100% performance boost on some datasets.</p>
+<p>Let see the numbers for JDK 7 performance.</p>
