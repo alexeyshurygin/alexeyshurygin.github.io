@@ -4,3 +4,4 @@
 
 layout: home
 ---
+<a href="/about">About me</a>
