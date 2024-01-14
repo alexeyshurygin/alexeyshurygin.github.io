@@ -26,19 +26,19 @@ permalink: "/2023/01/14/macos-vpn-sonoma/"
         <img src="/assets/shortcuts.png">
     </li>
     <li>Create script <b>vpn.sh</b> with the following content:
-        <blockquote>
+        <pre>
             #!/bin/zsh
 
             while true; do
             shortcuts run "Reconnect VPN"
             sleep 2
             done
-        </blockquote>
+        </pre>
     </li>
     <li>Run the script. It will work indefinitely until you kill it.
-        <code>
+        <pre>
             ./vpn.sh
-        </code></li>
+        </pre></li>
         You can play with sleep amount to tune your connection restore time vs battery and cpu usage.
     <li>Now your VPN connection is restored every time it breaks. The script takes CPU time, but it seems like a good
         tradeoff
