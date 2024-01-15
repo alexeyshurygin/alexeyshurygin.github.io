@@ -1,0 +1,37 @@
+---
+layout: post
+title: How to fix VPN on MacOS Sonoma
+date: 2024-01-15 16:16:16.000000000 +03:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories: []
+tags: []
+meta: {}
+permalink: "/2024/01/15/macos-vpn-sonoma/"
+---
+<p><!-- wp:paragraph --></p>
+<p>Apple recently broke its IKEv2 client in MacOS Sonoma.</p>
+<p>Symptoms are: vpn is disconnected every 25 minutes or so.
+    The internet is full of <a href="https://github.com/hwdsl2/setup-ipsec-vpn/issues/1486">bug reports</a> and long
+    discussions like <a href="https://discussions.apple.com/thread/255158874">this one</a>.
+</p>
+<p>As of MacOS 14.2.1 there's no fix for this.</p>
+<p>Hopefully Alexey can help.</p>
+<ol>
+    <li>Open <b>Shortcuts</b> app.</li>
+    <li>Create new shortcut like this one. Put name of your VPN connection in the "VPN" field of the command.
+        <img src="/assets/shortcuts2.png">
+    </li>
+    <li>Run the command. You can even run it from the menu bar. The command will run (essentially) indefinitely.
+        <p>You can play with sleep amount to tune your connection restore time vs battery and CPU usage.</p>
+    </li>
+    <li>Now your VPN connection is restored every time it breaks. The command takes ~20% CPU on my machine, but it seems
+        like a good tradeoff for working around OS bug.
+    </li>
+</ol>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><!-- /wp:paragraph --></p>
